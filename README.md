@@ -12,6 +12,8 @@ Guardian provides a native **Model Context Protocol (MCP)** server via HTTPS. No
 
 > *Free during early access. No API key required. Fair use applies — see our [terms](https://kaimeilabs.dev/terms) for details.*
 
+**One-Click Install**: [![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine)
+
 **Endpoint URL**: `https://api.kaimeilabs.dev/mcp`
 **Transport**: Streamable HTTP (`mcp.client.streamable_http`)
 
