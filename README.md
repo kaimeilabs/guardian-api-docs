@@ -10,7 +10,7 @@ When AI agents generate recipes, they hallucinate. They set ovens to impossible 
 
 Guardian provides a native **Model Context Protocol (MCP)** server via HTTPS. No API key required. By connecting your agent via MCP, it will automatically gain access to tools like `verify_recipe` and `list_dishes`.
 
-> *Free during early access. No API key required. Fair use applies — see our [terms](https://kaimeilabs.dev) for details.*
+> *Free during early access. No API key required. Fair use applies — see our [terms](https://kaimeilabs.dev/terms) for details.*
 
 **Endpoint URL**: `https://api.kaimeilabs.dev/mcp`
 **Transport**: Streamable HTTP (`mcp.client.streamable_http`)
@@ -60,9 +60,12 @@ Guardian can currently verify AI-generated recipes against **15 master recipes**
 
 ## 📊 Data & Privacy
 
-- All tool calls are logged for analytics and service improvement (dish name, latency, verdict, submitted recipes)
-- **No PII collected** — no user names, emails, IP addresses, or API keys
-- Fair use quotas enforced via compute limits during open beta
+- **No PII collected** — we do not store user names, emails, or API keys in our application logs. Underlying cloud infrastructure may temporarily process IP addresses for routing and security.
+- **Data for Compute Exchange** — the free early-access Service is provided in exchange for usage data. Submitted recipes are used to train models, improve verification accuracy, and create derived datasets. All external data products are anonymized. See our [Terms of Service](https://kaimeilabs.dev/terms) for full details.
+- **Do not include PII** in your recipe payloads (e.g., author names, email addresses). You are responsible for ensuring submitted content is free of personal data.
+- Fair use quotas enforced via compute limits during early access.
+
+> ⚠️ **Disclaimer**: Guardian verification results, including safety-related findings such as cooking temperatures and allergen warnings, are automated and informational only. They should not be relied upon as professional food safety, health, or culinary advice.
 
 ---
 
