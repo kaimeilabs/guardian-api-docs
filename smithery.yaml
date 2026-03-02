@@ -1,2 +1,10 @@
 homepage: "https://github.com/kaimeilabs/guardian-api-docs"
 icon: "https://api.kaimeilabs.dev/favicon.ico"
+configSchema:
+  type: "object"
+  properties:
+    logLevel:
+      type: "string"
+      enum: ["INFO", "DEBUG", "ERROR"]
+      default: "INFO"
+      description: "Optional logging level for the MCP connection."
