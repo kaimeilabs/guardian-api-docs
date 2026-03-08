@@ -1,10 +1,8 @@
 """
 Kaimei Labs | Guardian Engine — Python SDK Example
 ===================================================
-Guardian Engine is the symbolic verification layer for neuro-symbolic AI pipelines. It catches recipe
-hallucinations before they reach the pan — modelling each recipe as a directed acyclic graph
-(DAG) of culinary state transformations, then verifying temperatures, durations, techniques,
-and ingredient interactions against curated master recipes from professional kitchens.
+Guardian Engine verifies AI-generated recipes against curated master recipes from professional
+kitchens — catching hallucinations before they reach the pan.
 LLMs generate, Guardian verifies.
 
 This minimal client demonstrates how to connect to the public Guardian Engine MCP API and
@@ -28,18 +26,18 @@ async def verify_my_recipe():
 
     This example submits a deliberately flawed Basque Cheesecake recipe — one that an AI
     agent might hallucinate — to illustrate what Guardian catches:
-      - Missing required culinary state transformations (e.g. baking before cooling)
+      - Missing required cooking steps (e.g. baking before cooling)
       - Incomplete ingredient list (eggs and heavy cream are required for a Basque Cheesecake)
-      - Invalid technique sequencing in the DAG (cooling without prior heat application)
+      - Incorrect technique sequencing (cooling without prior heat application)
 
-    Guardian returns a structured authenticity report with a verification score (0–100%)
-    and a breakdown of each failed physics or technique constraint.
+    Guardian returns a structured authenticity report with a verification verdict
+    and a breakdown of each issue found.
     """
     print(f"Connecting to Guardian Engine at {GUARDIAN_URL}...")
 
     # A deliberately flawed recipe — the kind of hallucination an AI agent might produce.
     # It skips the required baking step and is missing key ingredients (eggs, heavy cream).
-    # Guardian will model this as a DAG and flag the broken state transformations.
+    # Guardian will analyze this and flag the issues.
     my_candidate_recipe = {
         "title": "Agent's Bad Cheesecake",
         "steps": [
@@ -77,9 +75,8 @@ async def verify_my_recipe():
                         "candidate_json": json.dumps(my_candidate_recipe)
                     })
 
-                    # The authenticity report scores the recipe 0–100% and lists each
-                    # failed constraint — broken technique sequences, missing ingredients,
-                    # incorrect state transformations, and physics violations.
+                    # The authenticity report lists each issue found — incorrect techniques,
+                    # missing ingredients, and verification failures.
                     print("\n--- Guardian Engine: Authenticity Report ---")
                     for content in result.content:
                         print(content.text)

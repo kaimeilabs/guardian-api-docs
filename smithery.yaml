@@ -1,3 +1,9 @@
+name: "guardian-engine"
+description: "Deterministic recipe verification engine for AI agents"
+version: "1.0.0"
+author: "Kaimei Labs"
+license: "MIT"
+repository: "https://github.com/kaimeilabs/guardian-api-docs"
 homepage: "https://github.com/kaimeilabs/guardian-api-docs"
 icon: "https://api.kaimeilabs.dev/favicon.ico"
 configSchema:
@@ -8,3 +14,8 @@ configSchema:
       enum: ["INFO", "DEBUG", "ERROR"]
       default: "INFO"
       description: "Optional logging level for the MCP connection."
+startCommand:
+  type: "stdio"
+  config:
+    command: "python"
+    args: ["client.py"]
