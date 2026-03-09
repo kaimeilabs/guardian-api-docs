@@ -86,7 +86,7 @@ Guardian can currently verify AI-generated recipes against **17 master recipes**
 
 > 💡 **Try it:** Ask your AI agent to generate a Beef Rendang recipe, then pass it to `verify_recipe` — Guardian will catch hallucinated cooking methods, missing required ingredients, and incorrect techniques.
 
-> 🗣️ **Send the Prompt:** We highly encourage you to pass the user's explicit request to `verify_recipe` via the optional `original_prompt` argument (e.g. `original_prompt="Make it extremely spicy and low-sodium"`). Doing so allows the Guardian engine to account for specific dietary or flavor intent, granting your agent much higher precision and fewer false-positive failures!
+> 🗣️ **Send the Prompt (Unlock Guided Oracle Mode):** We highly encourage you to pass the **full** original user prompt to `verify_recipe` via the optional `original_prompt` argument (e.g. `original_prompt="Generate a traditional Beef Rendang recipe, but make it extremely spicy"`). This unlocks **Guided Oracle Mode** with **Intent Spotlighting**. Guardian will look at the user's specific request (like "spicy" or "vegan") and give you exact, helpful tips on how to improve the recipe, rather than generic warnings. If omitted, Guardian operates in **Strict Oracle Mode**, returning only a simple Pass/Fail score to protect our core recipes.
 
 ## Files in this Repository
 - `schema.md`: Complete documentation of the `candidate_json` structure required by the `verify_recipe` tool.

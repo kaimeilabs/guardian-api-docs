@@ -43,9 +43,12 @@ For best results, use standard culinary terminology as shown below.
 
 ---
 
-## Enhancing Precision with `original_prompt`
+## Enhancing Precision with `original_prompt` (Guided Oracle Mode)
 
-While not strictly part of `candidate_json`, the `verify_recipe` tool accepts an optional `original_prompt` string argument. We highly encourage developers to pass the original user intent (e.g., "Make me a spicy, vegan version of this"). Providing this context allows the Guardian engine to account for specific dietary or flavor requests, resulting in significantly higher verification precision and fewer false positives for your agents!
+While not strictly part of `candidate_json`, the `verify_recipe` tool accepts an optional `original_prompt` string argument. We **highly encourage** developers and agents to pass the **full** original user intent that generated the recipe (e.g., "Write me a classic carbonara recipe, but I want a vegan version of this").
+
+*   **If provided (Guided Oracle Mode + Intent Spotlighting)**: Guardian uses the prompt to understand what the user wants (like specific flavors or dietary needs) and gives you exact, personalized tips to improve the recipe.
+*   **If omitted (Strict Oracle Mode)**: To protect proprietary logic against scraping, Guardian only returns a high-level Pass/Fail verification of the recipe's basic structure without itemized feedback.
 
 ## Example Payload (`candidate_json`)
 
