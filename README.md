@@ -66,16 +66,17 @@ If you are building a custom agent, connect directly to the `https://api.kaimeil
 
 ## 🍳 Available Verification Targets
 
-Guardian can currently verify AI-generated recipes against **17 master recipes** spanning 11 cuisines. Each master recipe encodes the culinary standards that define an authentic version of the dish.
+Guardian can currently verify AI-generated recipes against **20 master recipes** spanning 12 cuisines. Each master recipe encodes the culinary standards that define an authentic version of the dish.
 
 | Cuisine | Dishes |
 |---------|--------|
-| **French** | Confit de Canard · Cheese Soufflé · Crème Brûlée · French Onion Soup · Coq au Vin |
+| **French** | Confit de Canard · Cheese Soufflé · Crème Brûlée · French Onion Soup · Coq au Vin · Beef Bourguignon |
 | **Chinese** | Kung Pao Chicken · Cantonese Steamed Fish |
+| **Thai** | Thai Green Curry |
 | **Indian** | Chicken Tikka Masala |
 | **Indonesian** | Beef Rendang |
 | **British** | Beef Wellington |
-| **Italian** | Pasta Carbonara |
+| **Italian** | Pasta Carbonara · Risotto alla Milanese |
 | **Spanish** | Basque Cheesecake |
 | **American** | Southern Fried Chicken · Texas Smoked Brisket |
 | **Peruvian** | Ceviche |
