@@ -1,21 +1,13 @@
-name: "guardian-engine"
-description: "Deterministic recipe verification engine for AI agents"
-version: "1.0.0"
-author: "Kaimei Labs"
-license: "MIT"
-repository: "https://github.com/kaimeilabs/guardian-api-docs"
-homepage: "https://github.com/kaimeilabs/guardian-api-docs"
-icon: "https://api.kaimeilabs.dev/favicon.ico"
-configSchema:
-  type: "object"
-  properties:
-    logLevel:
-      type: "string"
-      enum: ["INFO", "DEBUG", "ERROR"]
-      default: "INFO"
-      description: "Optional logging level for the MCP connection."
+# Guardian Engine — Smithery Configuration
+# https://smithery.ai/servers/kaimeilabs/guardian-engine
+#
+# Guardian Engine is a hosted MCP server (Streamable HTTP).
+# No local installation required — agents connect directly via HTTPS.
+
 startCommand:
-  type: "stdio"
-  config:
-    command: "python"
-    args: ["client.py"]
+  type: "http"
+  url: "https://api.kaimeilabs.dev/mcp"
+  configSchema:
+    type: "object"
+    properties: {}
+    additionalProperties: false

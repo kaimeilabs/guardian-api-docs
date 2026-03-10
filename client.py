@@ -42,13 +42,13 @@ async def verify_my_recipe():
         "title": "Agent's Bad Cheesecake",
         "steps": [
             {
-                "step_index": "1.0",
+                "step_number": 1,
                 "technique": "mixing",
                 "instruction_english": "Mix all ingredients.",
                 "intent": "preparation"
             },
             {
-                "step_index": "2.0",
+                "step_number": 2,
                 "technique": "cooling",
                 "instruction_english": "Put in fridge to set.",
                 "intent": "setting"

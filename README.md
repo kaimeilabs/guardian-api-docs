@@ -1,72 +1,135 @@
-# Guardian Engine by Kaimei Labs - API & SDK
+# Guardian Engine — API & MCP Integration Guide
 
-Welcome to the **Guardian Engine** public SDK and Agent Connection repository, built by **Kaimei Labs**.
+> **LLMs generate, Guardian verifies.** Deterministic recipe verification for AI agents — catches hallucinated temperatures, missing techniques, wrong ingredients, and impossible cooking steps before they reach the pan.
 
-> **Guardian verifies AI-generated recipes against curated master recipes from professional kitchens — catching hallucinations before they reach the pan. LLMs generate, Guardian verifies.**
+[![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine)
 
-When AI agents generate recipes, they hallucinate. They set ovens to impossible temperatures, skip critical cooking steps, substitute ingredients that break emulsions, and produce dishes that fail in the real kitchen. Guardian Engine verifies each recipe against curated master standards from professional kitchens, checking temperatures, durations, techniques, and ingredient correctness. The result: a strict authenticity and verification score.
+**Endpoint**: `https://api.kaimeilabs.dev/mcp`  
+**Transport**: [Streamable HTTP (MCP)](https://modelcontextprotocol.io)  
+**Auth**: None — free during early access (fair use applies)
 
-## Connecting Your Agent (MCP)
+---
 
-Guardian provides a native **Model Context Protocol (MCP)** server via HTTPS. No API key required. By connecting your agent via MCP, it will automatically gain access to tools like `verify_recipe` and `list_dishes`.
+## Connect Your Agent
 
-> *Free during early access. No API key required. Fair use applies — see our [terms](https://kaimeilabs.dev/terms) for details.*
+Guardian is a hosted MCP server. No install, no API key, no Docker. Pick your client and paste the config.
 
-**One-Click Install**: [![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine)
+### Claude Desktop
 
-**Endpoint URL**: `https://api.kaimeilabs.dev/mcp`
-**(Note to Smithery users: The default Smithery proxy URL `guardian-engine--kaimeilabs.run.tools` does not support Streaming HTTP. Please use `https://api.kaimeilabs.dev/mcp` directly).**
-**Transport**: Streamable HTTP (`mcp.client.streamable_http`)
+Add to your `claude_desktop_config.json`:
 
-### Tools Provided
+```json
+{
+  "mcpServers": {
+    "guardian": {
+      "url": "https://api.kaimeilabs.dev/mcp",
+      "transport": "streamable-http"
+    }
+  }
+}
+```
 
-1. **`verify_recipe`**: Verify a candidate recipe against a Guardian master recipe.
-2. **`list_dishes`**: List all available master recipes that Guardian can verify against.
+Restart Claude Desktop. Ask: *"List the available dishes in Guardian Engine"* to confirm.
 
-### Quickstart (Python)
+### Cursor
 
-Evaluator agents and Python developers can connect via the official `mcp` SDK using `StreamableHttpClient`:
+Open **Settings → MCP Servers → Add new MCP server**, then paste:
+
+```json
+{
+  "guardian": {
+    "url": "https://api.kaimeilabs.dev/mcp",
+    "transport": "streamable-http"
+  }
+}
+```
+
+### VS Code (GitHub Copilot)
+
+Add to your `.vscode/mcp.json` (or user `settings.json` under `"mcp"`):
+
+```json
+{
+  "servers": {
+    "guardian": {
+      "type": "http",
+      "url": "https://api.kaimeilabs.dev/mcp"
+    }
+  }
+}
+```
+
+### Windsurf
+
+Add to your Windsurf MCP config:
+
+```json
+{
+  "mcpServers": {
+    "guardian": {
+      "serverUrl": "https://api.kaimeilabs.dev/mcp"
+    }
+  }
+}
+```
+
+### Smithery (One-Click)
+
+[![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine) — auto-configures Claude Desktop, Cursor, and more.
+
+> **(Note to Smithery users: The default Smithery proxy URL `guardian-engine--kaimeilabs.run.tools` does not support Streaming HTTP. Use `https://api.kaimeilabs.dev/mcp` directly.)**
+
+### Any MCP Client (Python SDK)
 
 ```python
 import asyncio
-from mcp import ClientSession
-from mcp.client.streamable_http import StreamableHttpClient
+from mcp.client.session import ClientSession
+from mcp.client.streamable_http import streamable_http_client
+from httpx import AsyncClient
 
 async def main():
-    async with StreamableHttpClient("https://api.kaimeilabs.dev/mcp") as http_client:
-        async with ClientSession(http_client) as session:
-            # Initialize connection
-            await session.initialize()
+    async with AsyncClient(timeout=30.0) as http:
+        async with streamable_http_client("https://api.kaimeilabs.dev/mcp", http_client=http) as streams:
+            read_stream, write_stream, _ = streams
+            async with ClientSession(read_stream, write_stream) as session:
+                await session.initialize()
+                result = await session.call_tool("list_dishes", arguments={"cuisine_filter": "french"})
+                print(result)
 
-            # Call the tool
-            result = await session.call_tool(
-                "list_dishes",
-                arguments={"cuisine_filter": "french"}
-            )
-            print("Response:", result)
-
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())
 ```
 
-1. Ensure you have Python 3.10+ installed.
-2. Install the required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Run the live integration test to confirm connection to the public API:
-   ```bash
-   python test_integration.py
-   ```
-4. Check out `client.py` for a full JSON recipe payload example.
+```bash
+pip install mcp>=1.2.1 httpx>=0.27.0
+```
 
-### Custom Agents (LangChain, LlamaIndex, etc.)
-If you are building a custom agent, connect directly to the `https://api.kaimeilabs.dev/mcp` endpoint using the official Python MCP SDK. See `client.py` for a minimal example, or `test_integration.py` for a full integration test.
+---
 
+## Tools
 
-## 🍳 Available Verification Targets
+### `verify_recipe`
 
-Guardian can currently verify AI-generated recipes against **20 master recipes** spanning 12 cuisines. Each master recipe encodes the culinary standards that define an authentic version of the dish.
+Verify a candidate recipe against a Guardian master recipe. Returns a structured report with verdict, score, and detailed findings.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `dish` | string | Yes | Name or alias of the dish (e.g. `"carbonara"`, `"rendang"`, `"kung-pao"`, `"bourguignon"`) |
+| `candidate_json` | string | Yes | Full recipe as a JSON string — see [schema.md](schema.md) |
+| `original_prompt` | string | No | The user's original request that generated the recipe |
+
+**Tip — pass the prompt for better feedback:** When you include `original_prompt` (e.g. *"Make a spicy vegan rendang"*), Guardian activates **Guided Oracle Mode**: it reads the user's intent and returns specific, actionable improvement hints tailored to their request. Without it, Guardian returns only a Pass/Fail verdict and score.
+
+### `list_dishes`
+
+List all master recipes Guardian can verify against.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `cuisine_filter` | string | No | Filter by cuisine (e.g. `"french"`, `"chinese"`, `"thai"`) |
+
+---
+
+## Available Recipes (20 dishes, 12 cuisines)
 
 | Cuisine | Dishes |
 |---------|--------|
@@ -83,40 +146,40 @@ Guardian can currently verify AI-generated recipes against **20 master recipes**
 | **European** | Florentine Biscuits |
 | **Universal** | Roast Chicken |
 
-> 📌 New recipes are added regularly. Use the `list_dishes` tool to always get the current catalog from the live API.
-
-> 💡 **Try it:** Ask your AI agent to generate a Beef Rendang recipe, then pass it to `verify_recipe` — Guardian will catch hallucinated cooking methods, missing required ingredients, and incorrect techniques.
-
-> 🗣️ **Send the Prompt (Unlock Guided Oracle Mode):** We highly encourage you to pass the **full** original user prompt to `verify_recipe` via the optional `original_prompt` argument (e.g. `original_prompt="Generate a traditional Beef Rendang recipe, but make it extremely spicy"`). This unlocks **Guided Oracle Mode** with **Intent Spotlighting**. Guardian will look at the user's specific request (like "spicy" or "vegan") and give you exact, helpful tips on how to improve the recipe, rather than generic warnings. If omitted, Guardian operates in **Strict Oracle Mode**, returning only a simple Pass/Fail score to protect our core recipes.
-
-## Files in this Repository
-- `schema.md`: Complete documentation of the `candidate_json` structure required by the `verify_recipe` tool.
-- `client.py`: A minimal Python example demonstrating how to submit a JSON recipe for verification.
-- `test_integration.py`: A live integration test verifying connection to the Guardian API.
+All recipes accept multiple aliases (e.g. `"gong-bao"`, `"tikka"`, `"risotto"`, `"bourguignon"`). Use `list_dishes` for the full live catalog — new dishes are added regularly.
 
 ---
 
-## 📊 Data & Privacy
+## Files in This Repository
 
-- **No PII collected** — we do not store user names, emails, or API keys in our application logs. Underlying cloud infrastructure may temporarily process IP addresses for routing and security.
-- **Data for Compute Exchange** — the free early-access Service is provided in exchange for usage data. Submitted recipes are used to train models, improve verification accuracy, and create derived datasets. All external data products are anonymized. See our [Terms of Service](https://kaimeilabs.dev/terms) for full details.
-- **Do not include PII** in your recipe payloads (e.g., author names, email addresses). You are responsible for ensuring submitted content is free of personal data.
-- Fair use quotas enforced via compute limits during early access.
+| File | Purpose |
+|------|---------|
+| `schema.md` | Complete `candidate_json` structure required by `verify_recipe` |
+| `client.py` | Python example: submit a recipe for verification |
+| `test_integration.py` | Live connectivity test against the public API |
+| `smithery.yaml` | Smithery MCP registry configuration |
 
-> ⚠️ **Disclaimer**: Guardian verification results, including safety-related findings such as cooking temperatures and allergen warnings, are automated and informational only. They should not be relied upon as professional food safety, health, or culinary advice.
+---
+
+## Data & Privacy
+
+- **No PII collected** — we do not store user names, emails, or API keys. Underlying cloud infrastructure may temporarily process IP addresses for routing.
+- **Data for Compute Exchange** — the free service is provided in exchange for usage data. Submitted recipes are used to improve verification accuracy and create anonymized derived datasets. See our [Terms of Service](https://kaimeilabs.dev/terms).
+- **Do not include PII** in recipe payloads.
+- Fair use quotas enforced via compute limits.
+
+> ⚠️ **Disclaimer**: Verification results, including safety-related findings such as cooking temperatures and allergen warnings, are automated and informational only. They should not be relied upon as professional food safety, health, or culinary advice.
 
 ---
 
 ## Support & Contact
 
-Whether you're building an AI cooking assistant, a smart kitchen platform, or an agentic food-tech product — we want to hear from you.
+Building an AI cooking assistant, smart kitchen platform, or agentic food-tech product? We'd love to hear from you.
 
-*   **Email**: `partners@kaimeilabs.dev`
-*   **Website**: [https://kaimeilabs.dev](https://kaimeilabs.dev)
-*   **GitHub**: [github.com/kaimeilabs](https://github.com/kaimeilabs)
+- **Email**: partners@kaimeilabs.dev
+- **Website**: [kaimeilabs.dev](https://kaimeilabs.dev)
+- **GitHub**: [github.com/kaimeilabs](https://github.com/kaimeilabs)
 
 ## License
 
-The client code in this SDK repository (`client.py`, `test_integration.py`, etc.) is released under the open-source **MIT License**, so you can freely embed it into your proprietary agents.
-
-*Note: The core Guardian Engine verification logic and Master Recipe datasets running on the backend API are proprietary and closed-source.*
+Client code in this repository (`client.py`, `test_integration.py`) is released under the **MIT License**. The Guardian Engine verification logic and master recipe datasets are proprietary.

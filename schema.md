@@ -45,15 +45,14 @@ For best results, use standard culinary terminology as shown below.
 
 ## Enhancing Precision with `original_prompt` (Guided Oracle Mode)
 
-While not strictly part of `candidate_json`, the `verify_recipe` tool accepts an optional `original_prompt` string argument. We **highly encourage** developers and agents to pass the **full** original user intent that generated the recipe (e.g., "Write me a classic carbonara recipe, but I want a vegan version of this").
+The `verify_recipe` tool accepts an optional `original_prompt` string argument. We **strongly encourage** agents and developers to pass the **full** original user request that generated the recipe (e.g., *"Write me a classic carbonara recipe, but I want a vegan version"*).
 
-*   **If provided (Guided Oracle Mode + Intent Spotlighting)**: Guardian uses the prompt to understand what the user wants (like specific flavors or dietary needs) and gives you exact, personalized tips to improve the recipe.
-*   **If omitted (Strict Oracle Mode)**: To protect proprietary logic against scraping, Guardian only returns a high-level Pass/Fail verification of the recipe's basic structure without itemized feedback.
+*   **If provided (Guided Oracle Mode)**: Guardian reads the user's intent and returns specific, actionable improvement tips tailored to their request (e.g., dietary needs, flavor preferences, technique questions).
+*   **If omitted**: Guardian returns a Pass/Fail verdict with a verification score, but without detailed per-issue guidance.
 
 ## Example Payload (`candidate_json`)
 
-Here is an example of a perfectly structured `candidate_json` payload for a simplified Beef Rendang step.
-*(Note: The temperatures and durations below are dummy values to illustrate the format. The true verified thresholds are proprietary.)*
+Here is an example of a well-structured `candidate_json` payload for a simplified Beef Rendang:
 
 ```json
 {
