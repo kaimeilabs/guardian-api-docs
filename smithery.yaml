@@ -4,10 +4,19 @@
 # Guardian Engine is a hosted MCP server (Streamable HTTP).
 # No local installation required — agents connect directly via HTTPS.
 
+name: "Guardian Engine"
+description: "Deterministic recipe verification for AI agents — catches hallucinated temperatures, missing techniques, wrong ingredients, and impossible cooking steps across 20 dishes and 12 cuisines. No API key required."
+homepage: "https://kaimeilabs.dev"
+icon: "https://api.kaimeilabs.dev/favicon.ico"
+
 startCommand:
   type: "http"
   url: "https://api.kaimeilabs.dev/mcp"
   configSchema:
     type: "object"
-    properties: {}
+    properties:
+      guardianApiKey:
+        type: "string"
+        title: "API Key"
+        description: "Optional API key for priority access. Leave blank for free-tier usage (no key required)."
     additionalProperties: false
