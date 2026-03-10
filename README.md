@@ -2,7 +2,7 @@
 
 > **LLMs generate, Guardian verifies.** Deterministic recipe verification for AI agents — catches hallucinated temperatures, missing techniques, wrong ingredients, and impossible cooking steps before they reach the pan.
 
-[![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine)
+[![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine) [![Glama.ai MCP Server](https://glama.ai/mcp/servers/badge)](https://glama.ai/mcp/servers/kaimeilabs/guardian-engine)
 
 **Endpoint**: `https://api.kaimeilabs.dev/mcp`  
 **Transport**: [Streamable HTTP (MCP)](https://modelcontextprotocol.io)  
@@ -78,6 +78,10 @@ Add to your Windsurf MCP config:
 [![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine) — auto-configures Claude Desktop, Cursor, and more.
 
 > **(Note to Smithery users: The default Smithery proxy URL `guardian-engine--kaimeilabs.run.tools` does not support Streaming HTTP. Use `https://api.kaimeilabs.dev/mcp` directly.)**
+
+### Glama.ai
+
+Guardian Engine is also listed on **[Glama.ai](https://glama.ai/mcp/servers/kaimeilabs/guardian-engine)** — discover and connect to MCP servers from the Glama directory.
 
 ### Any MCP Client (Python SDK)
 
@@ -158,6 +162,7 @@ All recipes accept multiple aliases (e.g. `"gong-bao"`, `"tikka"`, `"risotto"`, 
 | `client.py` | Python example: submit a recipe for verification |
 | `test_integration.py` | Live connectivity test against the public API |
 | `smithery.yaml` | Smithery MCP registry configuration |
+| `glama.json` | Glama.ai MCP server claim configuration |
 
 ---
 
