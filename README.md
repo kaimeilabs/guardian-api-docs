@@ -4,6 +4,10 @@
 
 [![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine) [![Glama.ai MCP Server](https://glama.ai/mcp/servers/badge)](https://glama.ai/mcp/servers/kaimeilabs/guardian-engine)
 
+<a href="https://glama.ai/mcp/servers/kaimeilabs/guardian-engine">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/kaimeilabs/guardian-engine/badge" alt="guardian-engine MCP server" />
+</a>
+
 **Endpoint**: `https://api.kaimeilabs.dev/mcp`  
 **Transport**: [Streamable HTTP (MCP)](https://modelcontextprotocol.io)  
 **Auth**: None — free during early access (fair use applies)
