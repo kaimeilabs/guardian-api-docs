@@ -2,7 +2,7 @@
 
 > **Deterministic verification infrastructure for AI agent outputs.** Guardian Engine catches hallucinated temperatures, missing techniques, wrong ingredients, and impossible cooking steps before they reach the pan. Recipes are the first vertical — the same deterministic approach generalises to any procedural domain where correctness matters.
 
-[![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine) [![Glama.ai MCP Server](https://glama.ai/mcp/servers/badge)](https://glama.ai/mcp/servers/kaimeilabs/guardian-engine)
+[![Official MCP Registry](https://img.shields.io/badge/MCP%20Registry-Official-blue?logo=github)](https://registry.modelcontextprotocol.io/v0.1/servers/dev.kaimeilabs%2Fguardian-engine/versions/latest) [![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine) [![Glama.ai MCP Server](https://glama.ai/mcp/servers/badge)](https://glama.ai/mcp/servers/kaimeilabs/guardian-engine)
 
 **Endpoint**: `https://api.kaimeilabs.dev/mcp`  
 **Transport**: [Streamable HTTP (MCP)](https://modelcontextprotocol.io)  
@@ -77,7 +77,8 @@ Add to your Windsurf MCP config:
 
 [![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine) — auto-configures Claude Desktop, Cursor, and more.
 
-> **(Note to Smithery users: The default Smithery proxy URL `guardian-engine--kaimeilabs.run.tools` does not support Streaming HTTP. Use `https://api.kaimeilabs.dev/mcp` directly.)**
+> [!WARNING]
+> **Smithery Proxy Limitation:** The default Smithery proxy URL (`guardian-engine--kaimeilabs.run.tools`) **does not support Streaming HTTP** and will silently fail. You MUST edit your MCP config after installation to use the direct endpoint: `https://api.kaimeilabs.dev/mcp`.
 
 ### Glama.ai
 
@@ -151,7 +152,10 @@ List all master recipes Guardian can verify against.
 | **European** | Florentine Biscuits |
 | **Universal** | Roast Chicken |
 
-All recipes accept multiple aliases (e.g. `"gong-bao"`, `"tikka-masala"`, `"risotto"`, `"bourguignon"`). Use `list_dishes` for the full live catalog — new dishes are added regularly.
+All recipes accept multiple aliases (e.g. `"gong-bao"`, `"tikka-masala"`, `"risotto"`, `"bourguignon"`). Use `list_dishes` for the full live catalog.
+
+### Missing a Dish?
+The catalog is regularly expanding. If your agent requires verification for a dish not currently supported, please **[open an issue on GitHub](https://github.com/kaimeilabs/guardian-api-docs/issues)** to request it. We prioritize additions based on developer demand.
 
 ---
 
@@ -203,7 +207,9 @@ Each finding includes a `severity` and a `justification` grounded in culinary sc
 - **Do not include PII** in recipe payloads.
 - Fair use quotas enforced via compute limits.
 
-> ⚠️ **Disclaimer**: Verification results, including safety-related findings such as cooking temperatures and allergen warnings, are automated and informational only. They should not be relied upon as professional food safety, health, or culinary advice.
+> [!CAUTION]
+> **Not a Substitute for Food Safety Knowledge**  
+> While Guardian Engine catches explicitly dangerous AI hallucinations (like serving poultry below safe temperatures), it cannot guarantee a recipe is 100% safe to consume. Pathogen destruction relies on variables (time, mass, equipment) that text-based AI models cannot perfectly control. Verification results are informational and must always be paired with human common sense and standard kitchen safety practices.
 
 ---
 

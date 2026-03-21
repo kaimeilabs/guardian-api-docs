@@ -8,7 +8,7 @@ The engine uses this structured data to verify your recipe against curated maste
 For best results, use standard culinary terminology as shown below.
 
 *   **Techniques**: Use standard, snake_case culinary techniques (e.g., `pan_frying`, `braising`, `steaming`).
-*   **Mediums**: Use simple, base culinary mediums (e.g., `water`, `oil`, `stock`).
+*   **Mediums**: Use a valid medium from the Engine's vocabulary. Valid values include: `fat`, `olive_oil`, `vegetable_oil`, `peanut_oil`, `sesame_oil`, `oil`, `coconut_oil`, `butter`, `water`, `stock`, `coconut_milk`, `wine`, `air`, `steam`, `milk`, `cream`, `yogurt`, `vinegar`, `citrus`, `spirits`, `rice_wine`, `beer`, `smoke`, `buttermilk`, `sugar_syrup`.
 *   **Ingredients**: Always use singular, simple names (e.g., `salt`, `black_pepper`, `olive_oil`, `garlic`, `onion`).
 
 ---
