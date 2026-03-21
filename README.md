@@ -1,6 +1,6 @@
 # Guardian Engine — API & MCP Integration Guide
 
-> **LLMs generate, Guardian verifies.** Deterministic recipe verification for AI agents — catches hallucinated temperatures, missing techniques, wrong ingredients, and impossible cooking steps before they reach the pan.
+> **Deterministic verification infrastructure for AI agent outputs.** Guardian Engine catches hallucinated temperatures, missing techniques, wrong ingredients, and impossible cooking steps before they reach the pan. Recipes are the first vertical — the same deterministic approach generalises to any procedural domain where correctness matters.
 
 [![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine) [![Glama.ai MCP Server](https://glama.ai/mcp/servers/badge)](https://glama.ai/mcp/servers/kaimeilabs/guardian-engine)
 
@@ -133,24 +133,54 @@ List all master recipes Guardian can verify against.
 
 ---
 
-## Available Recipes (20 dishes, 12 cuisines)
+## Available Recipes (25 dishes, 13 cuisines)
 
 | Cuisine | Dishes |
 |---------|--------|
 | **French** | Confit de Canard · Cheese Soufflé · Crème Brûlée · French Onion Soup · Coq au Vin · Beef Bourguignon |
 | **Chinese** | Kung Pao Chicken · Cantonese Steamed Fish |
-| **Thai** | Thai Green Curry |
-| **Indian** | Chicken Tikka Masala |
+| **Thai** | Thai Green Curry · Pad Thai |
+| **Indian** | Chicken Tikka Masala · Biryani · Butter Chicken |
 | **Indonesian** | Beef Rendang |
 | **British** | Beef Wellington |
 | **Italian** | Pasta Carbonara · Risotto alla Milanese |
-| **Spanish** | Basque Cheesecake |
+| **Spanish** | Basque Cheesecake · Spanish Paella |
 | **American** | Southern Fried Chicken · Texas Smoked Brisket |
 | **Peruvian** | Ceviche |
+| **Japanese** | Tonkotsu Ramen |
 | **European** | Florentine Biscuits |
 | **Universal** | Roast Chicken |
 
-All recipes accept multiple aliases (e.g. `"gong-bao"`, `"tikka"`, `"risotto"`, `"bourguignon"`). Use `list_dishes` for the full live catalog — new dishes are added regularly.
+All recipes accept multiple aliases (e.g. `"gong-bao"`, `"tikka-masala"`, `"risotto"`, `"bourguignon"`). Use `list_dishes` for the full live catalog — new dishes are added regularly.
+
+---
+
+## Example Verification Output
+
+What does a Guardian verification report actually look like? Here's the response structure when an AI agent submits a recipe with authenticity issues:
+
+```json
+{
+  "verdict": "FAILED",
+  "authenticity_score": 72.4,
+  "findings": [
+    {
+      "issue": "MISSING_REQUIRED_INGREDIENT",
+      "severity": "CRITICAL",
+      "justification": "This ingredient provides a signature flavour component essential to the dish's identity."
+    },
+    {
+      "issue": "WRONG_COOKING_MEDIUM",
+      "severity": "WARNING",
+      "justification": "Cooking medium fundamentally affects texture and flavour."
+    }
+  ],
+  "allergen_warnings": ["milk", "eggs"],
+  "summary": {"INFO": 1, "WARNING": 1, "CRITICAL": 2}
+}
+```
+
+Each finding includes a `severity` and a `justification` grounded in culinary science — letting the agent fix only what's wrong instead of guessing.
 
 ---
 
