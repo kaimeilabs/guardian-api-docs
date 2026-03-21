@@ -1,0 +1,6 @@
+# MCP Publisher auth tokens
+.mcpregistry_github_token
+.mcpregistry_registry_token
+
+# MCP Publisher binary
+mcp-publisher.exe
