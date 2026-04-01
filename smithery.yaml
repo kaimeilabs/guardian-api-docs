@@ -5,7 +5,7 @@
 # No local installation required — agents connect directly via HTTPS.
 
 name: "Guardian Engine"
-description: "Deterministic recipe verification for AI agents — catches hallucinated temperatures, missing techniques, wrong ingredients, and impossible cooking steps across 20 dishes and 12 cuisines. No API key required."
+description: "Deterministic recipe verification for AI agents — catches hallucinated temperatures, missing techniques, wrong ingredients, and impossible cooking steps across 29 dishes and 15 cuisines. No API key required."
 homepage: "https://kaimeilabs.dev"
 icon: "https://api.kaimeilabs.dev/favicon.ico"
 

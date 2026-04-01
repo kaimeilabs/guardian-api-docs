@@ -134,19 +134,21 @@ List all master recipes Guardian can verify against.
 
 ---
 
-## Available Recipes (25 dishes, 13 cuisines)
+## Available Recipes (29 dishes, 15 cuisines)
 
 | Cuisine | Dishes |
 |---------|--------|
-| **French** | Confit de Canard · Cheese Soufflé · Crème Brûlée · French Onion Soup · Coq au Vin · Beef Bourguignon |
+| **French** | Confit de Canard · Cheese Soufflé · Chocolate Soufflé · Crème Brûlée · French Onion Soup · Coq au Vin · Beef Bourguignon |
 | **Chinese** | Kung Pao Chicken · Cantonese Steamed Fish |
 | **Thai** | Thai Green Curry · Pad Thai |
 | **Indian** | Chicken Tikka Masala · Biryani · Butter Chicken |
 | **Indonesian** | Beef Rendang |
 | **British** | Beef Wellington |
-| **Italian** | Pasta Carbonara · Risotto alla Milanese |
+| **Italian** | Pasta Carbonara · Risotto alla Milanese · Ragù alla Bolognese |
 | **Spanish** | Basque Cheesecake · Spanish Paella |
 | **American** | Southern Fried Chicken · Texas Smoked Brisket |
+| **Mexican** | Mole Poblano |
+| **Moroccan** | Marrakech Lamb Tagine |
 | **Peruvian** | Ceviche |
 | **Japanese** | Tonkotsu Ramen |
 | **European** | Florentine Biscuits |
