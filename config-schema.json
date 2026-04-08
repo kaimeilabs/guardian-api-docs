@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "required": [],
+  "properties": {
+    "guardianApiKey": {
+      "type": "string",
+      "title": "API Key",
+      "description": "Optional API key for priority access. Leave blank for free-tier usage (no key required).",
+      "default": ""
+    }
+  },
+  "additionalProperties": false
+}
