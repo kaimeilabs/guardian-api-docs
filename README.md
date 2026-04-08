@@ -134,25 +134,14 @@ List all master recipes Guardian can verify against.
 
 ---
 
-## Available Recipes (29 dishes, 15 cuisines)
+## Available Recipes (51 dishes, 4 continents)
 
-| Cuisine | Dishes |
-|---------|--------|
-| **French** | Confit de Canard · Cheese Soufflé · Chocolate Soufflé · Crème Brûlée · French Onion Soup · Coq au Vin · Beef Bourguignon |
-| **Chinese** | Kung Pao Chicken · Cantonese Steamed Fish |
-| **Thai** | Thai Green Curry · Pad Thai |
-| **Indian** | Chicken Tikka Masala · Biryani · Butter Chicken |
-| **Indonesian** | Beef Rendang |
-| **British** | Beef Wellington |
-| **Italian** | Pasta Carbonara · Risotto alla Milanese · Ragù alla Bolognese |
-| **Spanish** | Basque Cheesecake · Spanish Paella |
-| **American** | Southern Fried Chicken · Texas Smoked Brisket |
-| **Mexican** | Mole Poblano |
-| **Moroccan** | Marrakech Lamb Tagine |
-| **Peruvian** | Ceviche |
-| **Japanese** | Tonkotsu Ramen |
-| **European** | Florentine Biscuits |
-| **Universal** | Roast Chicken |
+| Region | Dishes |
+|--------|--------|
+| **Europe** | Beef Bourguignon · Beef Wellington · Basque Cheesecake · Cacio e Pepe · Cheese Soufflé · Chocolate Soufflé · Confit de Canard · Coq au Vin · Crème Brûlée · Fish & Chips · Florentine Biscuits · French Onion Soup · Gazpacho · Gnocchi di Patate · Goulash · Osso Buco · Pasta alla Norma · Pasta Carbonara · Patatas Bravas · Ratatouille · Risotto alla Milanese · Roast Chicken · Spaghetti Aglio e Olio · Spaghetti Bolognese · Spanish Paella · Tiramisu · Tortilla de Patatas |
+| **Asia & Middle East** | Beef Rendang · Biryani · Butter Chicken · Cantonese Steamed Fish · Chicken Tikka Masala · Falafel · Hummus · Kimchi Fried Rice · Kung Pao Chicken · Laksa · Nasi Goreng · Pad Thai · Tabbouleh · Thai Green Curry · Tonkotsu Ramen |
+| **Americas** | Caesar Salad · Ceviche · Chili con Carne · Macaroni and Cheese · Mole Poblano · Southern Fried Chicken · Texas Smoked Brisket |
+| **Africa** | Moroccan Lamb Tagine · Shakshuka |
 
 All recipes accept multiple aliases (e.g. `"gong-bao"`, `"tikka-masala"`, `"risotto"`, `"bourguignon"`). Use `list_dishes` for the full live catalog.
 

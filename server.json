@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "dev.kaimeilabs/guardian-engine",
   "title": "Guardian Engine",
-  "description": "Deterministic recipe verification for AI agents. 29 dishes & 15 cuisines. No install required.",
+  "description": "Deterministic recipe verification for AI agents. 51 dishes across 4 continents. No install required.",
   "repository": {
     "url": "https://github.com/kaimeilabs/guardian-api-docs",
     "source": "github"
