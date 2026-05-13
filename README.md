@@ -121,6 +121,7 @@ Verify a candidate recipe against a Guardian master recipe. Returns a structured
 | `dish` | string | Yes | Name or alias of the dish (e.g. `"carbonara"`, `"rendang"`, `"kung-pao"`, `"bourguignon"`) |
 | `candidate_json` | string | Yes | Full recipe as a JSON string — see [schema.md](schema.md) |
 | `original_prompt` | string | No | The user's original request that generated the recipe |
+| `response_format` | string | No | `"text"` (default) or `"json"`. Use `"json"` for machine-actionable patches in agentic self-correction loops |
 
 **Tip — pass the prompt for better feedback:** When you include `original_prompt` (e.g. *"Make a spicy vegan rendang"*), Guardian activates **Guided Oracle Mode**: it reads the user's intent and returns specific, actionable improvement hints tailored to their request. Without it, Guardian returns only a Pass/Fail verdict and score.
 
