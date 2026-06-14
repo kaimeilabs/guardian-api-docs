@@ -48,7 +48,7 @@ For best results, use standard culinary terminology as shown below.
 The `verify_recipe` tool accepts an optional `original_prompt` string argument. We **strongly encourage** agents and developers to pass the **full** original user request that generated the recipe (e.g., *"Write me a classic carbonara recipe, but I want a vegan version"*).
 
 *   **If provided (Guided Oracle Mode)**: Guardian reads the user's intent and returns specific, actionable improvement tips tailored to their request (e.g., dietary needs, flavor preferences, technique questions).
-*   **If omitted**: Guardian returns a Pass/Fail verdict with a verification score, but without detailed per-issue guidance.
+*   **If omitted**: Guardian returns the `PASSED`/`FAILED` verdict and findings, but without detailed per-issue guidance.
 
 ## Example Payload (`candidate_json`)
 

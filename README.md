@@ -10,6 +10,28 @@
 
 ---
 
+> ## ⚠️ Safety & Liability Notice
+>
+> Guardian Engine is an **automated, informational** recipe-verification tool. It is **not** a
+> food-safety, medical, nutritional, or regulatory-compliance authority, and its output is **not**
+> professional advice.
+>
+> - **Allergens are not guaranteed.** Allergen warnings come from an automated knowledge base that
+>   may be incomplete or wrong. A `PASSED` verdict is **NOT** a guarantee that a recipe is free of
+>   any allergen or safe for any individual. **Never** rely on Guardian to decide whether a food is
+>   safe for someone with a food allergy or intolerance — always verify against the actual
+>   ingredient/product labelling and consult a qualified professional.
+> - **Cooking-safety findings are informational** and must not replace certified guidance (e.g.
+>   USDA, EU FIC, or your local food-safety authority).
+> - **No warranty.** The Service is provided "AS IS", without warranty of any kind. To the maximum
+>   extent permitted by law, Kaimei Labs accepts no liability for any loss, injury, or damage
+>   arising from use of, or reliance on, Guardian output.
+>
+> Use of the API constitutes acceptance of the full [Terms of Service](https://kaimeilabs.dev/terms)
+> (warranty disclaimer, limitation of liability, indemnification).
+
+---
+
 ## Connect Your Agent
 
 Guardian is a hosted MCP server. No install, no API key, no Docker. Pick your client and paste the config.
@@ -114,7 +136,7 @@ pip install mcp>=1.2.1 httpx>=0.27.0
 
 ### `verify_recipe`
 
-Verify a candidate recipe against a Guardian master recipe. Returns a structured report with verdict, score, and detailed findings.
+Verify a candidate recipe against a Guardian master recipe. Returns a structured report with a `PASSED`/`FAILED` verdict and detailed findings (each citing the rule it violated).
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -123,7 +145,7 @@ Verify a candidate recipe against a Guardian master recipe. Returns a structured
 | `original_prompt` | string | No | The user's original request that generated the recipe |
 | `response_format` | string | No | `"text"` (default) or `"json"`. Use `"json"` for machine-actionable patches in agentic self-correction loops |
 
-**Tip — pass the prompt for better feedback:** When you include `original_prompt` (e.g. *"Make a spicy vegan rendang"*), Guardian activates **Guided Oracle Mode**: it reads the user's intent and returns specific, actionable improvement hints tailored to their request. Without it, Guardian returns only a Pass/Fail verdict and score.
+**Tip — pass the prompt for better feedback:** When you include `original_prompt` (e.g. *"Make a spicy vegan rendang"*), Guardian activates **Guided Oracle Mode**: it reads the user's intent and returns specific, actionable improvement hints tailored to their request. Without it, Guardian returns the `PASSED`/`FAILED` verdict and findings only.
 
 ### `list_dishes`
 
@@ -158,7 +180,7 @@ What does a Guardian verification report actually look like? Here's the response
 ```json
 {
   "verdict": "FAILED",
-  "authenticity_score": 72.4,
+  "response_format_version": "v3",
   "findings": [
     {
       "issue": "MISSING_REQUIRED_INGREDIENT",
