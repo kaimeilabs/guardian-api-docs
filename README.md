@@ -145,7 +145,7 @@ Verify a candidate recipe against a Guardian master recipe. Returns a structured
 | `original_prompt` | string | No | The user's original request that generated the recipe |
 | `response_format` | string | No | `"text"` (default) or `"json"`. Use `"json"` for machine-actionable patches in agentic self-correction loops |
 
-**Tip — pass the prompt for better feedback:** When you include `original_prompt` (e.g. *"Make a spicy vegan rendang"*), Guardian activates **Guided Oracle Mode**: it reads the user's intent and returns specific, actionable improvement hints tailored to their request. Without it, Guardian returns the `PASSED`/`FAILED` verdict and findings only.
+**Tip — include the original prompt for personalised feedback:** When you include `original_prompt` (e.g. *"Make a spicy vegan rendang"*), Guardian matches findings to the user's stated dietary needs and flavour preferences (e.g. flagging which specific issue conflicts with a "vegan" or "spicy" intent), and activates audience-sensitive safety checks (e.g. flagging honey in recipes for infants, raw egg for pregnant users). Without it, Guardian still returns the full verdict and all findings.
 
 ### `list_dishes`
 
@@ -157,16 +157,17 @@ List all master recipes Guardian can verify against.
 
 ---
 
-## Available Recipes (51 dishes, 4 continents)
+## Available Recipes (161 dishes, 5 regions)
 
 | Region | Dishes |
 |--------|--------|
-| **Europe** | Beef Bourguignon · Beef Wellington · Basque Cheesecake · Cacio e Pepe · Cheese Soufflé · Chocolate Soufflé · Confit de Canard · Coq au Vin · Crème Brûlée · Fish & Chips · Florentine Biscuits · French Onion Soup · Gazpacho · Gnocchi di Patate · Goulash · Osso Buco · Pasta alla Norma · Pasta Carbonara · Patatas Bravas · Ratatouille · Risotto alla Milanese · Roast Chicken · Spaghetti Aglio e Olio · Spaghetti Bolognese · Spanish Paella · Tiramisu · Tortilla de Patatas |
-| **Asia & Middle East** | Beef Rendang · Biryani · Butter Chicken · Cantonese Steamed Fish · Chicken Tikka Masala · Falafel · Hummus · Kimchi Fried Rice · Kung Pao Chicken · Laksa · Nasi Goreng · Pad Thai · Tabbouleh · Thai Green Curry · Tonkotsu Ramen |
-| **Americas** | Caesar Salad · Ceviche · Chili con Carne · Macaroni and Cheese · Mole Poblano · Southern Fried Chicken · Texas Smoked Brisket |
-| **Africa** | Moroccan Lamb Tagine · Shakshuka |
+| **Europe** | Basque Cheesecake · Beef Bourguignon · Beef Wellington · Butternut Squash Soup · Cacio e Pepe · Caprese Salad · Cassoulet · Cheese Soufflé · Chicken Cacciatore · Chicken Marsala · Chicken Piccata · Chocolate Soufflé · Confit de Canard · Coq au Riesling · Coq au Vin · Crème Brûlée · Crêpes · Fettuccine Alfredo · Fish & Chips · Florentine Biscuits · Focaccia Barese · French Omelette · French Onion Soup · Frittata · Gazpacho · Gnocchi di Patate · Goulash · Greek Salad · Köttbullar · Mille-Feuille · Minestrone · Niçoise Salad · Osso Buco · Pasta alla Norma · Pasta Carbonara · Pasta Pomodoro · Patatas Bravas · Penne alla Vodka · Pesto alla Genovese · Pierogi · Pissaladière · Potato-Leek Soup · Ratatouille · Risotto alla Milanese · Roast Chicken · Sauerbraten · Shepherd's Pie · Spanakopita · Spaghetti Aglio e Olio · Spaghetti all'Amatriciana · Spaghetti Bolognese · Spanish Paella · Steak Frites · Stollen · Tarte Tatin · Tiramisu · Tomato Soup · Tortilla Española |
+| **Asia & Southeast Asia** | Banh Mi · Beef Rendang · Biryani · Bulgogi · Butter Chicken · Cantonese Steamed Fish · Char Kway Teow · Chicken Tikka Masala · Chow Mein · Dan Dan Noodles · Jianbing · Khao Soi · Kimchi Fried Rice · Kung Pao Chicken · Laksa · Lo Mein · Massaman Curry · Nasi Goreng · Nasi Lemak · Okonomiyaki · Pad See Ew · Pad Thai · Palak Paneer · Rogan Josh · Som Tum · Sushi Rice · Sweet & Sour Chicken · Teriyaki Chicken · Thai Green Curry · Tonkatsu · Tonkotsu Ramen · Yakisoba |
+| **Middle East & North Africa** | Falafel · Hummus · Koshary · Lentil Soup · Moroccan Lamb Tagine · Mutabal · Pita Bread · Shakshuka · Shish Taouk · Tabbouleh |
+| **Americas** | Angel Food Cake · Baked Potato · Baked Salmon · Baked Ziti · Banana Bread · BBQ Ribs · Biscuits & Gravy · Buttermilk Pancakes · Caesar Salad · Carnitas · Ceviche · Cheese Quesadilla · Chicken Fajitas · Chicken Noodle Soup · Chicken Parmesan · Chili con Carne · Chocolate Chip Cookies · Classic Chocolate Cake · Cobb Salad · Crab Cakes · Creamed Spinach · Eggs Benedict · Fish Tacos · French Dip Sandwich · French Toast · Fudge Brownies · Garlic Butter Shrimp · Ground Beef Tacos · Italian-American Meatballs · Jerk Chicken · Key Lime Pie · Lobster Roll · Lomo Saltado · Macaroni & Cheese · Mashed Potatoes · Mole Poblano · Pan-Seared Pork Chops · Pan-Seared Scallops · Pão de Queijo · Pastel de Choclo · Pecan Pie · Philly Cheesesteak · Pot Roast · Pozole · Pulled Pork · Roasted Brussels Sprouts · Roasted Cauliflower · Sautéed Mushrooms · Shrimp Scampi · Southern Fried Chicken · Tamales · Texas Smoked Brisket · Turkey Meatballs · Vanilla Cupcakes · Vegetable Fried Rice · Waldorf Salad |
+| **Africa** | Bunny Chow · Efo Riro · Melktert · Muamba de Galinha · Suya |
 
-All recipes accept multiple aliases (e.g. `"gong-bao"`, `"tikka-masala"`, `"risotto"`, `"bourguignon"`). Use `list_dishes` for the full live catalog.
+All recipes accept multiple aliases (e.g. `"rendang"`, `"tikka-masala"`, `"risotto"`, `"bourguignon"`, `"carbonara"`). Use `list_dishes` for the full live catalog.
 
 ### Missing a Dish?
 The catalog is regularly expanding. If your agent requires verification for a dish not currently supported, please **[open an issue on GitHub](https://github.com/kaimeilabs/guardian-api-docs/issues)** to request it. We prioritize additions based on developer demand.
