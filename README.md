@@ -1,6 +1,14 @@
 # Guardian Engine — API & MCP Integration Guide
 
-> **Deterministic verification infrastructure for AI agent outputs.** Guardian Engine catches hallucinated temperatures, missing techniques, wrong ingredients, and impossible cooking steps before they reach the pan. Recipes are the first vertical — the same deterministic approach generalises to any procedural domain where correctness matters.
+> **A deterministic oracle inside your agent's generate→verify loop.** Your LLM authors the recipe; Guardian judges it. Guardian Engine catches hallucinated temperatures, missing techniques, wrong ingredients, and impossible cooking steps before they reach the pan — and returns machine-actionable patches so your agent can fix exactly what's wrong. Recipes are the first vertical — the same deterministic approach generalises to any procedural domain where correctness matters.
+
+**Why an oracle instead of another LLM critique?** An LLM critique is a *sample* — it misses differently on every run. Guardian's symbolic engine makes guarantees a generative model structurally cannot:
+
+- **Exhaustive checking** — every rule is evaluated on every call, not a sample of them.
+- **Certified negatives** — "no EU Annex II allergen source detected" is an absence claim an LLM cannot make.
+- **Replayable verdicts** — same input + same spec + same knowledge-base version → byte-identical output. Every response pins `kb_version_hash` and `master_hash` so any verdict is reproducible as an audit record.
+- **Machine-actionable repair** — findings come with structured `patches` (and `fix_recipe` can apply them deterministically); your agent authors the rest and re-verifies.
+- **Bring your own spec** — verify against *your* house recipe or SOP via `master_json`, not just the bundled catalog.
 
 [![Official MCP Registry](https://img.shields.io/badge/MCP%20Registry-Official-blue?logo=github)](https://registry.modelcontextprotocol.io/v0.1/servers/dev.kaimeilabs%2Fguardian-engine/versions/latest) [![Install with Smithery](https://smithery.ai/install-badge.svg)](https://smithery.ai/servers/kaimeilabs/guardian-engine) [![Glama.ai MCP Server](https://glama.ai/mcp/servers/badge)](https://glama.ai/mcp/servers/kaimeilabs/guardian-engine)
 
@@ -16,11 +24,20 @@
 > food-safety, medical, nutritional, or regulatory-compliance authority, and its output is **not**
 > professional advice.
 >
-> - **Allergens are not guaranteed.** Allergen warnings come from an automated knowledge base that
->   may be incomplete or wrong. A `PASSED` verdict is **NOT** a guarantee that a recipe is free of
->   any allergen or safe for any individual. **Never** rely on Guardian to decide whether a food is
->   safe for someone with a food allergy or intolerance — always verify against the actual
->   ingredient/product labelling and consult a qualified professional.
+> - **Allergens are not guaranteed.** Allergen warnings (including `check_safety`,
+>   `check_allergens`, and the `allergens` field of every verification response) come from an
+>   automated knowledge base that may be incomplete or wrong. A `PASSED` verdict or an empty
+>   allergen list is **NOT** a guarantee that a recipe is free of any allergen or safe for any
+>   individual. **Never** rely on Guardian to decide whether a food is safe for someone with a
+>   food allergy or intolerance — always verify against the actual ingredient/product labelling
+>   and consult a qualified professional.
+> - **Dietary and religious claims are not certifications.** `verify_dietary_claim` results
+>   (vegan, vegetarian, gluten-free, dairy-free, nut-free, halal, kosher) are automated
+>   ingredient-level checks — they are **not** a substitute for certification by a recognised
+>   dietary or religious authority.
+> - **Repaired recipes are not certified safe.** `fix_recipe` output must be reviewed by a human
+>   before being cooked, served, or published; allergen findings are never auto-fixed and a
+>   repaired recipe may still fail verification.
 > - **Cooking-safety findings are informational** and must not replace certified guidance (e.g.
 >   USDA, EU FIC, or your local food-safety authority).
 > - **No warranty.** The Service is provided "AS IS", without warranty of any kind. To the maximum
@@ -134,26 +151,98 @@ pip install mcp>=1.2.1 httpx>=0.27.0
 
 ## Tools
 
+The MCP server exposes seven tools. `verify_recipe` is the core loop; the rest support the compare → verify → repair cycle and master-independent safety checks.
+
 ### `verify_recipe`
 
-Verify a candidate recipe against a Guardian master recipe. Returns a structured report with a `PASSED`/`FAILED` verdict and detailed findings (each citing the rule it violated).
+Verify a candidate recipe against a Guardian master spec. Returns a structured report with a strict `PASSED`/`FAILED` verdict (no scores) and detailed findings, each citing the rule it violated. The verdict is policy-driven: any `CRITICAL` finding fails the recipe; more than 5 `WARNING`s also fail.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `dish` | string | Yes | Name or alias of the dish (e.g. `"carbonara"`, `"rendang"`, `"kung-pao"`, `"bourguignon"`) |
-| `candidate_json` | string | Yes | Full recipe as a JSON string — see [schema.md](schema.md) |
+| `dish_name` | string | Yes* | Name or alias of the dish (e.g. `"carbonara"`, `"rendang"`, `"kung-pao"`, `"bourguignon"`). `dish` is accepted as a backward-compatible alias. *Optional when `master_json` is supplied |
+| `candidate_json` | string \| object | Yes | Full recipe as JSON — see [schema.md](schema.md). Max 500 KB |
+| `master_json` | string \| object | No | **Bring your own master** — your house recipe/SOP to verify against, using the same schema as catalog masters. Bypasses the bundled catalog; the response pins your spec via `master_hash` (sha256) and `master_source: "user"` |
 | `original_prompt` | string | No | The user's original request that generated the recipe |
 | `response_format` | string | No | `"text"` (default) or `"json"`. Use `"json"` for machine-actionable patches in agentic self-correction loops |
+| `session_id` | string | No | Track an agent's improvement loop across multiple attempts |
+| `operator_id` | string | No | Audit identifier tagged into the verification log and compliance record (letters, digits, hyphens; max 64 chars) |
 
-**Tip — include the original prompt for personalised feedback:** When you include `original_prompt` (e.g. *"Make a spicy vegan rendang"*), Guardian matches findings to the user's stated dietary needs and flavour preferences (e.g. flagging which specific issue conflicts with a "vegan" or "spicy" intent), and activates audience-sensitive safety checks (e.g. flagging honey in recipes for infants, raw egg for pregnant users). Without it, Guardian still returns the full verdict and all findings.
+**Tip — include the original prompt for personalised feedback:** When you include `original_prompt` (e.g. *"Make a spicy vegan rendang"*), Guardian matches findings to the user's stated dietary needs and flavour preferences, and activates audience-sensitive safety checks (e.g. flagging honey in recipes for infants, raw egg for pregnant users). Without it, Guardian still returns the full verdict and all findings.
+
+**Unknown dish?** If the dish isn't in the catalog, the `UNKNOWN_DISH` error carries a `safety_fallback` verdict — the master-independent safety layer (poultry temperature + allergen scan) still runs, so your agent always leaves with deterministic value.
+
+**Field audience:** `issue` is a machine-readable code for programmatic handling — don't show it to end users. Use `title` and `suggested_correction` as the user-facing fields.
+
+### `fix_recipe`
+
+Deterministically repair a candidate recipe against a master spec. Verifies, applies every machine-actionable patch the symbolic engine produced (missing ingredients, quantities, temperatures, durations, cooking media, substitutions), then re-verifies. **No LLM is involved** — the repair is a deterministic function of the candidate and the ruleset.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `dish_name` | string | Yes* | Dish to repair against (`dish` alias accepted). *Optional when `master_json` is supplied |
+| `candidate_json` | string \| object | Yes | Same schema as `verify_recipe` |
+| `master_json` | string \| object | No | BYO master to repair against; patches (including `suggested_step` templates) are built from *your* spec |
+| `original_prompt` | string | No | Used only for safety-context awareness during verification |
+| `response_format` | string | No | `"text"` (default) or `"json"` — use `"json"` to receive the full `fixed_recipe` object |
+
+The response reports `verdict_before` → `verdict_after`, `fully_fixed`, `patches_applied`, `patches_skipped`, `unresolved_findings`, and the `fixed_recipe`. Changes that need recipe-authoring judgement (adding a whole cooking phase, rewriting instructions, ratio rebalancing) are **not** auto-applied — they're returned under `patches_skipped`, with `add_step` patches carrying a `suggested_step` template from the master for *your* agent to author in the recipe's own voice and re-verify. **Allergen findings are never auto-fixed.** Do not assume a fixed recipe will pass — check `verdict_after`.
 
 ### `list_dishes`
 
-List all master recipes Guardian can verify against.
+List all master recipes Guardian can verify against, with rich metadata (slug, title, cuisine, region, aliases, complexity).
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `cuisine_filter` | string | No | Filter by cuisine (e.g. `"french"`, `"chinese"`, `"thai"`) |
+| `cuisine_filter` | string | No | Case-insensitive cuisine filter (e.g. `"french"`, `"chinese"`, `"thai"`) |
+
+### `get_master`
+
+Return the canonical master recipe for a dish — a pure knowledge-base lookup, no LLM. Enables **compare-then-verify** loops: fetch the master, diff it against your recipe, then call `verify_recipe` instead of verifying blind. Master content is transparent by default: exact temperatures, timings, and EU FIC 1169/2011 allergen codes are returned verbatim. Also the live reference for the `master_json` schema when bringing your own master.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `dish_name` | string | Yes | Name or alias of the dish |
+| `response_format` | string | No | `"json"` (default) or `"text"` |
+
+### `check_safety`
+
+Master-independent safety checks for **any** recipe — no dish resolution or master spec required. Checks poultry internal-temperature safety (≥ 74 °C) and scans all ingredients against the 14 EU FIC 1169/2011 Annex II allergen groups. Use it when `verify_recipe` has no matching master.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `candidate_json` | string | Yes | Full candidate recipe as a JSON string |
+
+### `check_allergens`
+
+Check an ingredient list for EU FIC 1169/2011 allergen presence, with a detailed audit trace mapping each ingredient to its Annex II allergen group (entry numbers and labels included).
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `ingredients` | list[string] | Yes | Ingredient names, freeform or canonical (e.g. `["butter", "wheat_flour", "peanut_butter"]`) |
+| `restrictions` | list[string] | No | Allergen group IDs to check against user restrictions: `gluten`, `crustaceans`, `eggs`, `fish`, `peanuts`, `soy`, `dairy`, `tree_nuts`, `celery`, `mustard`, `sesame`, `sulphites`, `lupin`, `molluscs` |
+| `dish_name` | string | No | Reporting context |
+| `check_all_eu_allergens` | boolean | No | `true` scans for all 14 Annex II groups regardless of `restrictions` — use for labelling-style "declare everything detected" checks |
+| `response_format` | string | No | `"text"` (default) or `"json"` |
+
+### `verify_dietary_claim`
+
+Verify that a recipe satisfies a dietary claim, returning a structured verdict with the specific offending ingredients — never a vague paraphrase.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `candidate_json` | string | Yes | Recipe JSON (only the ingredient list is required) |
+| `claim` | string | Yes | One of: `vegan`, `vegetarian`, `gluten_free`, `dairy_free`, `nut_free`, `halal`, `kosher` |
+| `response_format` | string | No | `"text"` (default) or `"json"` |
+
+---
+
+## Bring Your Own Master (`master_json`)
+
+The bundled catalog is a reference library — the primary production pattern is verifying against **your own spec**: a house recipe, a franchise SOP, a test kitchen's canonical version. Pass `master_json` to `verify_recipe` or `fix_recipe` (same schema as catalog masters — call `get_master` for a live example: `title`, `serves`, `ingredients[]`, `required_ingredients[]` with substitute tiers, `steps[]` with technique/temperature/duration/medium).
+
+- When `master_json` is supplied, `dish_name` may be omitted and the catalog is bypassed entirely — the candidate is checked against *your* spec.
+- The response pins the spec: `master_source: "user"` and `master_hash` (sha256 over the canonical master). Together with `kb_version_hash`, this makes every verdict **replayable**: anyone holding the same candidate, spec, and KB version reproduces the byte-identical result.
+- Malformed masters return a structured `INVALID_MASTER` error, not a server error. Max 500 KB.
 
 ---
 
@@ -176,30 +265,55 @@ The catalog is regularly expanding. If your agent requires verification for a di
 
 ## Example Verification Output
 
-What does a Guardian verification report actually look like? Here's the response structure when an AI agent submits a recipe with authenticity issues:
+What does a Guardian verification report actually look like? Here's the (abridged) `response_format: "json"` structure when an agent submits a carbonara made with bacon, cream, and an overheated pan:
 
 ```json
 {
-  "verdict": "FAILED",
+  "api_version": "0.7.1",
+  "schema_version": "1.0",
   "response_format_version": "v3",
+  "kb_version_hash": "7dda40a3b646",
+  "verdict": "FAILED",
+  "matched_against": "Pasta alla Carbonara (Master)",
+  "master_source": "catalog",
+  "master_hash": "3357e0929021c0003fea0b79015e2c53cf9ef50d70f0d507605788ad9741fd29",
+  "coverage_percentage": 100.0,
+  "summary": {"CRITICAL": 4, "WARNING": 0, "INFO": 3},
   "findings": [
     {
-      "issue": "MISSING_REQUIRED_INGREDIENT",
-      "severity": "CRITICAL",
-      "justification": "This ingredient provides a signature flavour component essential to the dish's identity."
+      "step_index": 2,
+      "issue": "TEMPERATURE_MISMATCH",
+      "severity": "critical",
+      "justification": "Temperature is significantly outside the required range.",
+      "title": "rendering",
+      "details": {"expected": "100.0-130.0", "observed": "180"},
+      "dimension": "temperature"
     },
     {
-      "issue": "WRONG_COOKING_MEDIUM",
-      "severity": "WARNING",
-      "justification": "Cooking medium fundamentally affects texture and flavour."
+      "step_index": null,
+      "issue": "INGREDIENT_SUBSTITUTED",
+      "severity": "critical",
+      "justification": "'bacon' is in the same group ('cured_pork') as 'guanciale' but is not the canonical ingredient for this recipe.",
+      "title": "You used bacon, expected guanciale",
+      "details": {"expected": "guanciale", "observed": "bacon"},
+      "dimension": "ingredients"
     }
   ],
-  "allergen_warnings": ["milk", "eggs"],
-  "summary": {"INFO": 1, "WARNING": 1, "CRITICAL": 2}
+  "allergens": [
+    "Allergen detected: Pork-derived ingredients (halal/kosher compliance)",
+    "Allergen detected: Milk and products thereof (including lactose)",
+    "Allergen detected: Cereals containing gluten (wheat, rye, barley, oats, spelt, kamut)"
+  ],
+  "patches": [
+    {"action": "set_temperature", "step_index": 2, "value": "100.0-130.0"},
+    {"action": "replace_ingredient", "remove": "bacon", "add": "guanciale"}
+  ]
 }
 ```
 
-Each finding includes a `severity` and a `justification` grounded in culinary science — letting the agent fix only what's wrong instead of guessing.
+Each finding carries a `severity`, a `justification` grounded in culinary science, and machine-readable `details` — and the `patches` array tells your agent *exactly* what change would resolve each fixable finding, so it repairs only what's wrong instead of regenerating and guessing. `kb_version_hash` + `master_hash` pin the exact knowledge-base and spec versions the verdict was computed against, making the result replayable as an audit record.
+
+Patch actions: `add_ingredient`, `replace_ingredient`, `set_quantity`, `adjust_quantity`, `set_temperature`, `set_duration`, `set_medium`, and `add_step` (which includes a `suggested_step` template for your agent to author, then re-verify).
 
 ---
 

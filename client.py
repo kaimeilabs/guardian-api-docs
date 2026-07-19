@@ -30,8 +30,8 @@ async def verify_my_recipe():
       - Incomplete ingredient list (eggs and heavy cream are required for a Basque Cheesecake)
       - Incorrect technique sequencing (cooling without prior heat application)
 
-    Guardian returns a structured authenticity report with a verification verdict
-    and a breakdown of each issue found.
+    Guardian returns a structured verification report with a strict PASSED/FAILED
+    verdict and a breakdown of each issue found.
     """
     print(f"Connecting to Guardian Engine at {GUARDIAN_URL}...")
 

@@ -1,8 +1,8 @@
 # Guardian Engine: `candidate_json` Schema
 
-When calling the `verify_recipe` tool, you must provide the recipe in a structured JSON format via the `candidate_json` argument.
+When calling the `verify_recipe` or `fix_recipe` tools, you must provide the recipe in a structured JSON format via the `candidate_json` argument (a JSON string or object; max 500 KB).
 
-The engine uses this structured data to verify your recipe against curated master recipes.
+The engine uses this structured data to verify your recipe against a master spec — either a curated catalog master (`dish_name`) or your own house recipe/SOP (`master_json`, see below).
 
 ## Allowed Values & Taxonomies
 For best results, use standard culinary terminology as shown below.
@@ -43,12 +43,55 @@ For best results, use standard culinary terminology as shown below.
 
 ---
 
-## Enhancing Precision with `original_prompt` (Guided Oracle Mode)
+## Bring Your Own Master: `master_json` Schema
 
-The `verify_recipe` tool accepts an optional `original_prompt` string argument. We **strongly encourage** agents and developers to pass the **full** original user request that generated the recipe (e.g., *"Write me a classic carbonara recipe, but I want a vegan version"*).
+`verify_recipe` and `fix_recipe` accept an optional `master_json` argument (JSON string or object; max 500 KB) — your own house recipe or SOP to verify against. When supplied, the bundled catalog is bypassed, `dish_name` may be omitted, and the response pins your spec via `master_hash` (sha256) and `master_source: "user"` so the verdict is replayable.
 
-*   **If provided (Guided Oracle Mode)**: Guardian reads the user's intent and returns specific, actionable improvement tips tailored to their request (e.g., dietary needs, flavor preferences, technique questions).
-*   **If omitted**: Guardian returns the `PASSED`/`FAILED` verdict and findings, but without detailed per-issue guidance.
+The schema is the same as catalog masters — **call `get_master` on any catalog dish for a complete live example.** The key fields:
+
+```json
+{
+  "title": "String - Name of the master spec (e.g. 'House Carbonara v2')",
+  "cuisine": "String - Optional cuisine classifier",
+  "serves": "Integer - Number of servings the quantities are calibrated for",
+  "ingredients": [
+    {"name": "String", "quantity": "Number", "unit": "String (e.g. 'g', 'ml')"}
+  ],
+  "required_ingredients": [
+    {
+      "name": "String - The canonical ingredient (e.g. 'guanciale')",
+      "substitutes": ["String - Acceptable alternatives"],
+      "critical": "Boolean - true escalates a missing/substituted ingredient to CRITICAL",
+      "reason": "String - Why this ingredient is required (returned in findings)",
+      "quantity": "Number", "unit": "String",
+      "ratio_to": "String - Optional ingredient to hold a ratio against",
+      "ratio_range": "[min, max] - Acceptable ratio window"
+    }
+  ],
+  "steps": [
+    {
+      "step_number": "Integer",
+      "title": "String",
+      "instruction_english": "String",
+      "technique": "String (e.g. 'braising')",
+      "cooking_medium": "String",
+      "estimated_temperature_c": "Number or [min, max]",
+      "duration_minutes": "Number or [min, max]"
+    }
+  ]
+}
+```
+
+A malformed master returns a structured `INVALID_MASTER` error rather than a server error.
+
+---
+
+## Enhancing Precision with `original_prompt`
+
+The `verify_recipe` tool accepts an optional `original_prompt` string argument. We **encourage** agents and developers to pass the **full** original user request that generated the recipe (e.g., *"Write me a classic carbonara recipe, but I want a vegan version"*).
+
+*   **If provided**: Guardian additionally activates safety-context awareness (e.g., flagging honey for infants, raw egg for pregnant users) and personalises feedback to the user's stated dietary needs and flavour preferences.
+*   **If omitted**: Guardian still returns the full `PASSED`/`FAILED` verdict and all findings, with specific ingredient names and technique details — enough to fix most recipes.
 
 ## Example Payload (`candidate_json`)
 
